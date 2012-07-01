@@ -31,6 +31,15 @@ describe "Static pages" do
           page.should have_selector("li##{item.id}", text: item.content)
         end
       end
+      
+      it "should display correct number of microposts in sidebar" do
+        # Chapter 10 Exercises .1
+        page.should have_selector('span',    text: "2 microposts")
+        user.microposts.first.destroy
+        visit root_path
+        page.should have_selector('span',    text: "1 micropost")
+        page.should_not have_selector('span',    text: "1 microposts")
+      end
     end
   end
   

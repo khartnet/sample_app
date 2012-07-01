@@ -51,8 +51,10 @@ describe "User pages" do
   
   describe "profile page" do
     let(:user) { FactoryGirl.create(:user) }
-    let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
-    let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
+    #let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
+    #let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
+    before(:all) { 31.times { FactoryGirl.create(:micropost, user: user, content: "Baz")  } }
+    #after(:all)  { User.delete_all }
 
     before { visit user_path(user) }
 
@@ -60,9 +62,29 @@ describe "User pages" do
     it { should have_selector('title', text: user.name) }
 
     describe "microposts" do
-      it { should have_content(m1.content) }
-      it { should have_content(m2.content) }
+      #it { should have_content(m1.content) }
+      #it { should have_content(m2.content) }
       it { should have_content(user.microposts.count) }
+    end
+    
+    describe "micropost pagination" do
+      it { should have_selector('div.pagination') }
+      # Exercises 10.2
+      it "should list each micropost" do
+        user.microposts.paginate(page: 1).each do |mp|
+          page.should have_selector('li', text: mp.content)
+        end
+      end
+    end
+    # Exercises 10.3
+    describe "visit other user profile" do
+      
+      let(:user2) { FactoryGirl.create(:user, email:"otherUser@example.com") }
+      let!(:m1) { FactoryGirl.create(:micropost, user: user2, content: "Foo") }
+      before { visit user_path(user2) }
+      it "should not have delete link for other users microposts" do
+        should_not have_link('delete')
+      end
     end
   end
 
