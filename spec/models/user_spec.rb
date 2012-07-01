@@ -213,5 +213,13 @@ describe User do
       it { should_not be_following(other_user) }
       its(:followed_users) { should_not include(other_user) }
     end
+    
+    it "should destroy associated relationships" do
+      relations = @user.relationships
+      @user.destroy
+      relations.each do |relations|
+        Relationship.find_by_id(relations.id).should be_nil
+      end
+    end
   end
 end

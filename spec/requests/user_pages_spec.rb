@@ -112,6 +112,15 @@ describe "User pages" do
           before { click_button "Follow" }
           it { should have_selector('input', value: 'Unfollow') }
         end
+        
+        describe "follower/following counts" do
+          before do
+            click_button "Follow"
+          end
+
+          it { should have_link("0 following", href: following_user_path(other_user)) }
+          it { should have_link("1 followers", href: followers_user_path(other_user)) }
+        end
       end
 
       describe "unfollowing a user" do
